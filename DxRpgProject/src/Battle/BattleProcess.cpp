@@ -334,18 +334,15 @@ namespace Battle
 		AbstractBattleCharacter *opponent,
 		CharacterEnemyKind k)
 	{
-		int damage = decideDamage(self, ((k == Character)?0:1), self->getMenuSelect());
+		int damage = decideDamage(self, ((k == Character) ? 0 : 1), self->getMenuSelect());
 		if (self->getAbility(3).flag)
 		{
 			damage *= 2;
 		}
 		opponent->setDamage(damage);  // ダメージをセット
-		// 体力が時間差で減っていく、最終的な終着位置
-		//opponent->setToHp(opponent->getScs()->hp_ - opponent->getDamage());
-    
-		opponent->calculateTp();
-		// 1回の攻撃で自分に8～13 TPがたまる
-		self->chargeTp();
+
+		// 相手のダメージポイントをセット
+		opponent->setDp();
 
 		// 魔法なら
 		if (20000 <= self->getMenuSelect() && self->getMenuSelect() < 30000)
@@ -363,17 +360,11 @@ namespace Battle
 		int damage = decideDamage(c, 0, c->getMenuSelect());
 		c->decreaseMp(9);
 		c->increaseHp(damage);
-		// 2015/07/27 DEL
-		//c->increaseToHp(damage);
     
 		// 回復しすぎたぶん戻す
 		if (c->getScs()->hp_ > c->getScs()->hpMax_)
 		{
 			c->getScs()->hp_ = c->getScs()->hpMax_;
-		}
-		if (c->getTp() > 300)
-		{
-			c->setTp(300);
 		}
 		c->increaseHp(0);   // 回復量を戻す
 
@@ -384,11 +375,7 @@ namespace Battle
 	int BattleProcess::abilityAction(AbstractBattleCharacter *c)
 	{
 		char message[MessageLenMax];
-		c->setTp(c->getTp() + 8 + DxLib::GetRand(5));
-		if (c->getTp() > 300)
-		{
-			c->setTp(300);
-		}
+		
 		int damage = 0;
 
 		switch (c->getMenuSelect())
@@ -414,11 +401,6 @@ namespace Battle
 				break;
 			case 30300:
 				damage = decideDamage(c, 2, c->getMenuSelect());
-				//c->setToHp(damage);
-				//if (c->getToHp() < 0)
-				//{
-				//    c->setToHp(0);
-				//}
 				c->getAbility(3).flag = true;
 				c->getAbility(3).cnt = 3;
 				addBoard("次回の攻撃時２倍のダメージ");
@@ -566,13 +548,13 @@ namespace Battle
 		graphBar(MonMtX, MonMtY,
 			mon_->getScs()->hp_, mon_->getScs()->hpMax_,
 			mon_->getScs()->mp_, mon_->getScs()->mpMax_,
-			mon_->getTp(), mon_->getAtbCnt()
+			mon_->getAtbCnt(), -1
 			);
 		decreaseHpAction(chr_);
 		graphBar(ChrMtX, ChrMtY,
 			chr_->getScs()->hp_, chr_->getScs()->hpMax_,
 			chr_->getScs()->mp_, chr_->getScs()->mpMax_,
-			chr_->getTp(), chr_->getAtbCnt()
+			chr_->getAtbCnt(), chr_->getDp()
 			);
 	}
 
@@ -650,38 +632,10 @@ namespace Battle
 	}
 
 	void BattleProcess::graphBar(int x, int y, int hp, int hpMax,
-		int mp, int mpMax, int tp, int atbCnt)
+		int mp, int mpMax, int atbCnt, int dp)
 	{
 		const int MeterHeight = 5;
 		const int OffsetY = 25;
-
-		int barColor;
-		int tp_gage[2];
-
-		tp_gage[0] = tp % 101;
-		tp_gage[1] = tp % 101;
-		if (tp > 100)
-		{
-			tp_gage[0] = 100;
-			if (tp > 200)
-			{
-				tp_gage[1] = 100;
-			}
-		}
-		// ATBメータの色
-		if (atbCnt < 240)
-		{
-			// メーターがまだ満タンじゃなかったら 灰色
-			barColor = DxLib::GetColor(50, 150, 150);  // 灰色
-		}
-		else
-		{
-			// レインボー
-			barColor = GetColor(
-				(gc_->getGCount() * 3) % 256,
-				(gc_->getGCount() * 3 + 85) % 256,
-				(gc_->getGCount() * 3 + 170) % 256);
-		}
 
 		// HPメータの枠
 		DxLib::DrawBox(
@@ -722,86 +676,73 @@ namespace Battle
 			DxLib::GetColor(200, 0, 0), TRUE);
 		decorateMeter(x, y + OffsetY, MeterHeight, 150 * mp / mpMax);
 
-		// TPメーターの枠を描画
-		DxLib::DrawBox(
-			x,
-			y + (OffsetY * 2),
-			x + 150,
-			y + (OffsetY * 2) + MeterHeight,
-			DxLib::GetColor(100, 100, 100), FALSE);
-		// TPメーターの中身を描画
-		DxLib::DrawBox(
-			x,
-			y + (OffsetY * 2),
-			x + 150 * tp_gage[0] / 100,
-			y + (OffsetY * 2) + MeterHeight,
-			DxLib::GetColor(100, 100, 100), TRUE);
-		if (tp > 100)
-		{
-			// TPメーターの中身を描画
-			DxLib::DrawBox(
-				x,
-				y + (OffsetY * 2),
-				x + 150 * tp_gage[1] / 100,
-				y + (OffsetY * 2) + MeterHeight,
-				DxLib::GetColor(0, 255, 100), TRUE);
-		}
-		if (tp > 200)
-		{
-			// TPメーターの中身を描画
-			DxLib::DrawBox(
-				x,
-				y + (OffsetY * 2),
-				x + 150 * (tp - 200) / 100,
-				y + (OffsetY * 2) + MeterHeight,
-				DxLib::GetColor(255, 0, 0), TRUE);
-		}
-		// デコレーション
-		if (tp <= 100)
-		{
-			decorateMeter(x, y + (OffsetY * 2), MeterHeight, 150 * tp / 100);
-		}
-		else if (tp <= 200)
-		{
-			decorateMeter(x, y + (OffsetY * 2), MeterHeight, 150 * (tp - 100) / 100);
-		}
-		else
-		{
-			decorateMeter(x, y + (OffsetY * 2), MeterHeight, 150 * (tp - 200) / 100);
-		}
-
 		// ATBメーター
+		int barColorAtb = DxLib::GetColor(50, 150, 150);  // 灰色
 		// ATBメーターの枠を描画
 		DxLib::DrawBox(
 			x,
-			y + (OffsetY * 3),
+			y + (OffsetY * 2),
 			x + 150,
-			y + (OffsetY * 3) + MeterHeight,
-			barColor, FALSE);
+			y + (OffsetY * 2) + MeterHeight,
+			barColorAtb, FALSE);
 		// ATBメーターの中身描画
 		DxLib::DrawBox(
 			x,
-			y + (OffsetY * 3),
-			x + 150 * atbCnt / 240,
-			y + (OffsetY * 3) + MeterHeight,
-			barColor, TRUE);
+			y + (OffsetY * 2),
+			x + 150 * atbCnt / AtbCntMax,
+			y + (OffsetY * 2) + MeterHeight,
+			barColorAtb, TRUE);
+
+		// DP
+		int barColorDp = DxLib::GetColor(100, 100, 100);
+		if (dp == DpMax)
+		{
+			// レインボー
+			barColorDp = GetColor(
+				(gc_->getGCount() * 3) % 256,
+				(gc_->getGCount() * 3 + 85) % 256,
+				(gc_->getGCount() * 3 + 170) % 256);
+		}
+		if (dp != -1) {
+			// DPメーターの枠を描画
+			DxLib::DrawBox(
+				x,
+				y + (OffsetY * 3),
+				x + 150,
+				y + (OffsetY * 3) + MeterHeight,
+				DxLib::GetColor(100, 100, 100), FALSE);
+
+			// DPメーターの中身を描画
+			if (dp < DpMax)
+			{
+				DxLib::DrawBox(
+					x,
+					y + (OffsetY * 3),
+					x + 150 * dp / DpMax,
+					y + (OffsetY * 3) + MeterHeight,
+					barColorDp, TRUE);
+			}
+			else
+			{
+				DxLib::DrawBox(
+					x,
+					y + (OffsetY * 3),
+					x + 150 * dp / DpMax,
+					y + (OffsetY * 3) + MeterHeight,
+					barColorDp, TRUE);
+			}
+		}
 
 		DxLib::DrawFormatStringToHandle(x, y + 4, DxLib::GetColor(255, 255, 255),
 			rl_->getHdlFont(0), "HP %4d/%4d", hp, hpMax);    // HP数値表示
 		DxLib::DrawFormatStringToHandle(x, y + OffsetY + 4, DxLib::GetColor(255, 255, 255),
 			rl_->getHdlFont(0), "MP %4d/%4d", mp, mpMax);    // MP数値表示
 		DxLib::DrawFormatStringToHandle(x, y + (OffsetY * 2) + 4, DxLib::GetColor(255, 255, 255),
-			rl_->getHdlFont(0), "TP %8d%%", tp);    // TP数値表示
-		DxLib::DrawFormatStringToHandle(x, y + (OffsetY * 3) + 4, DxLib::GetColor(255, 255, 255),
-			rl_->getHdlFont(0), "ATB %7d", atbCnt);    // ATB数値表示
-
-	#ifdef _DEBUG
-	//    DxLib::DrawFormatStringToHandle(x, y - (OffsetY * 3) + 4, DxLib::GetColor(255, 255, 255),
-	//        rl_->getHdlFont(0), "ACT    : %3d", actCnt);
-	//    DxLib::DrawFormatStringToHandle(x, y - (OffsetY * 2) + 4, DxLib::GetColor(255, 255, 255),
-	//        rl_->getHdlFont(0), "DAM ACT: %3d", damActCnt);
-	#endif
-
+			rl_->getHdlFont(0), "ATB");
+		if (dp == DpMax) {
+			DxLib::DrawFormatStringToHandle(x, y + (OffsetY * 3) + 8, barColorDp,
+				rl_->getHdlFont(1), "リミットブレイク");    // DP
+		}
 	}
 
 	// 左から右に流れる白い線をスーっとメーターにデコレート
@@ -1007,7 +948,7 @@ namespace Battle
 
 		DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
 		DxLib::DrawBox(0, 0, 640, 480, DxLib::GetColor(0, 255, 255), TRUE);
-		DxLib::DrawString(300, 230, "VICTORY!!", DxLib::GetColor(255, 255, 255));
+		DxLib::DrawString(300, 230, "WON!!", DxLib::GetColor(255, 255, 255));
 		DxLib::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 		cnt++;
@@ -1046,6 +987,7 @@ namespace Battle
 					rl_->getHdlFont(1), "%s", Main[i]);
 			}
 		}
+		
 		// サブメニュー
 		for (int i = 0; i < SubMenuKind; i++)
 		{
@@ -1053,12 +995,12 @@ namespace Battle
 			if (chr_->getMenuSelect() >= 100 + 100 * i
 				&& chr_->getMenuSelect() < 200 + 100 * i)
 			{
-				int y;
-				y = chr_->getMenuSelectY();
+				int y = chr_->getMenuSelectY();
 				for (int j = 0; j < MenuNum; j++)
 				{
 					int x = 0;
-					if (j == y)
+					// 選択している個所は左に動かす
+					if (y == j)
 					{
 						x = -5;
 					}
@@ -1069,6 +1011,19 @@ namespace Battle
 				}
 			}
 		}
+		if (chr_->getDp() == DpMax) {
+			int x = 0;
+			int y = chr_->getMenuSelectY();
+			const int InsertMenuPositionY = 2;
+			if (y == InsertMenuPositionY)
+			{
+				x = -5;
+			}
+			DxLib::DrawFormatStringToHandle(OffsetX + x, OffsetY + 18 * InsertMenuPositionY,
+				DxLib::GetColor(255, 255, 255),
+				rl_->getHdlFont(1), "%s", "リミットブレイク");
+		}
+
 		// →カーソル
 		DxLib::DrawGraph(OffsetX - 20 + (gc_->getGCount() % 20) / 4 - 5,
 			OffsetY + 18 * chr_->getMenuSelectY() + 1,
@@ -1083,7 +1038,7 @@ namespace Battle
 
 	char *BattleProcess::decideBoardString(char *message)
 	{
-		if (chr_->getAtbCnt() == 240
+		if (chr_->getAtbCnt() == AtbCntMax
 			&& chr_->getMenuSelect() < 10000)
 		{
 			switch (chr_->getMenuSelect())
@@ -1107,7 +1062,7 @@ namespace Battle
 					strcpy(message, "通常攻撃を行います。");
 					break;
 				case 101:
-					strcpy(message, "TPを使用して特殊攻撃を行います。");
+					strcpy(message, "特殊攻撃を行います。");
 					break;
 				case 200:
 					strcpy(message, "MP9消費して回復魔法を行います。");

@@ -37,13 +37,13 @@ namespace Battle
 		scs_->equip_ = 20;               // 装備の防御力
 		scs_->level_ = 10;
     
-		tp_ = 0;
+		dp_ = 0;
 		cntSpeed_ = 1.0;              // カウンターが増加するスピード(double)
 		for (int i = 0; i < sizeof(abiFlag_); i++)
 		{
 			abiFlag_[i] = 0;
 		}
-		atbCnt_ = DxLib::GetRand(235);  // カウンター240で行動可
+		atbCnt_ = DxLib::GetRand(AtbCntMax - 5);  // カウンター240で行動可
 		atbCntFlag_ = true;
 		motionFlag_ = false;
 		menuSelect_ = 1;

@@ -4,7 +4,7 @@
 namespace Battle
 {
 	const int  AbilityMax = 5;
-	const int  TpMax = 300;
+	const int  DpMax = 200;
 	const int  UseMp[] = { 9, 8, 16, 24, 32 };
 
 	struct Status
@@ -45,10 +45,9 @@ namespace Battle
 		void    setX(int x);
 		int     getY() const;
 		void    setY(int y);
-		int     getTp() const;
-		void    setTp(int tp);
-		void    calculateTp();
-		void    chargeTp();
+		int     getDp() const;
+		void    setDp(int dp);
+		void    setDp();
 
 		Status  &getStatus();
 		void    setStatus(Status status);
@@ -114,7 +113,7 @@ namespace Battle
 		int     x_;
 		int     y_;
 
-		int     tp_;
+		int     dp_;    // ダメージを受けるとたまる値
 		double  cntSpeed_;
 		bool    abiFlag_[60];
 		int     atbCnt_;

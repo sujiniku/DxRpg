@@ -21,7 +21,7 @@ namespace Sequence
 			Parent();
 			~Parent();
 			void update(GrandParent* grandParent);
-			void moveTo(NextSequence);
+			void moveTo(NextSequence nextSequence);
 			::Map::AbstractMapCharacter *getCharacter(int index);
 			void setMapStage(int mapStage);
 

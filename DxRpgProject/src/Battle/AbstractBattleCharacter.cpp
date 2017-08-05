@@ -5,7 +5,7 @@ namespace Battle
 {
 	AbstractBattleCharacter::AbstractBattleCharacter()
 		:x_(0), y_(0),
-		tp_(0), cntSpeed_(0.0),
+		dp_(0), cntSpeed_(0.0),
 		atbCnt_(0), atbCntFlag_(false), motionFlag_(false), /*toHp_(0),*/
 		menuSelect_(0), menuSelectY_(0), actionCnt_(false), damageActionCnt_(0),
 		actionFlag_(false), graphFlag_(0), animationFlag_(false), damageFlag_(false),
@@ -42,38 +42,32 @@ namespace Battle
 		y_ = y;
 	}
 
-	int AbstractBattleCharacter::getTp() const
+	int AbstractBattleCharacter::getDp() const
 	{
-		return tp_;
+		return dp_;
 	}
 
-	void AbstractBattleCharacter::setTp(int tp)
+	void AbstractBattleCharacter::setDp(int dp)
 	{
-		tp_ = tp;
+		dp_ = dp;
 	}
 
-	// ダメージと体力最大値よりTPを決定
-	void  AbstractBattleCharacter::calculateTp()
+	// ダメージと最大HPよりDPを決定
+	void  AbstractBattleCharacter::setDp()
 	{
-		if (damage_ * 100 / scs_->hp_ < 1)
+		int plusDp = damage_ * 1000 / scs_->hp_;
+		if (plusDp < 1)
 		{
-			tp_ += 1;
+			dp_ += 1;
 		}
 		else
 		{
-			tp_ += damage_ * 100 / scs_->hp_;
+			dp_ += plusDp;
 		}
-		if (tp_ > TpMax)
+		if (dp_ > DpMax)
 		{
-			tp_ = TpMax;
+			dp_ = DpMax;
 		}
-	}
-
-	// TPをためる
-	void  AbstractBattleCharacter::chargeTp()
-	{
-		tp_ += 8 + DxLib::GetRand(5);
-		if (tp_ > TpMax) { tp_ = TpMax; }
 	}
 
 	int AbstractBattleCharacter::getAtbCnt() const

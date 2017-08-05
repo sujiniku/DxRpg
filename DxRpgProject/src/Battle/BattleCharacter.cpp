@@ -20,13 +20,13 @@ namespace Battle
 		x_ = BattleCharPosX1;
 		y_ = BattleCharPosY1;
 
-		tp_ = 0;
+		dp_ = 0;
 		cntSpeed_ = 1.0;
 		for (int i = 0; i < sizeof(abiFlag_); i++)
 		{
 			abiFlag_[i] = 0;
 		}
-		atbCnt_ = DxLib::GetRand(235);  // カウンター240で行動可
+		atbCnt_ = DxLib::GetRand(AtbCntMax - 5);  // カウンター240で行動可
 		atbCntFlag_ = true;
 		motionFlag_ = false;
 		menuSelect_ = 1;
