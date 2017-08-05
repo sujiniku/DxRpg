@@ -1009,19 +1009,22 @@ namespace Battle
 						DxLib::GetColor(255, 255, 255),
 						rl_->getHdlFont(1), "%s", Sub[i][j]);
 				}
+				// 攻撃時
+				if (i == 0) {
+					if (chr_->getDp() == DpMax) {
+						int x = 0;
+						int y = chr_->getMenuSelectY();
+						const int InsertMenuPositionY = 2;
+						if (y == InsertMenuPositionY)
+						{
+							x = -5;
+						}
+						DxLib::DrawFormatStringToHandle(OffsetX + x, OffsetY + 18 * InsertMenuPositionY,
+							DxLib::GetColor(255, 255, 255),
+							rl_->getHdlFont(1), "%s", "リミットブレイク");
+					}
+				}
 			}
-		}
-		if (chr_->getDp() == DpMax) {
-			int x = 0;
-			int y = chr_->getMenuSelectY();
-			const int InsertMenuPositionY = 2;
-			if (y == InsertMenuPositionY)
-			{
-				x = -5;
-			}
-			DxLib::DrawFormatStringToHandle(OffsetX + x, OffsetY + 18 * InsertMenuPositionY,
-				DxLib::GetColor(255, 255, 255),
-				rl_->getHdlFont(1), "%s", "リミットブレイク");
 		}
 
 		// →カーソル
