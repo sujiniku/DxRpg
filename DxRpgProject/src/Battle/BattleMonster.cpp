@@ -22,9 +22,9 @@ namespace Battle
 		x_ = BattleMonPosX1;
 		y_ = BattleMonPosY1;
 #ifdef _DEBUG
-		scs_->hp_ = 500;
+		scs_->hp_ = 200;
 #else
-		scs_->hp_ = 600 + DxLib::GetRand(20);
+		scs_->hp_ = 200 + DxLib::GetRand(20);
 #endif
 		scs_->hpMax_ = scs_->hp_;
 		scs_->mp_ = 136;

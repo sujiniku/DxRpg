@@ -51,6 +51,6 @@ namespace Map
 			walk();
 		}
 		animePicPos_ = decideAnimePic(walkPixel_, dir_);
-		return false;       // 常にfalseを返す(エンカウントしない)
+		return false;   // 常にfalseを返す(エンカウントしない)
 	}
 }

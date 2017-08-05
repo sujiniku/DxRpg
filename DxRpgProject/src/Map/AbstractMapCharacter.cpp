@@ -95,26 +95,12 @@ namespace Map
 		// ŽålŒö
 		if (kind_ == MainCharIndex)
 		{
-			if (isPassable == NoThrough)
-			{
-				return false;
-			}
-			else
-			{
-				return true;
-			}
+			return !(isPassable == NoThrough);
 		}
 		// ’¬ƒLƒƒƒ‰
 		else
 		{
-			if (isPassable >= MainCharOnly)
-			{
-				return false;
-			}
-			else
-			{
-				return true;
-			}
+			return !(isPassable >= MainCharOnly);
 		}
 	}
 

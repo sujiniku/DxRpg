@@ -51,18 +51,13 @@ namespace Map
 		// xもyも座標が１区画のサイズの倍数のとき
 		if (x_%BlockLen == 0 && y_%BlockLen == 0)
 		{
-			// BまたはFが押されている
-			if (gc->getKey(KEY_INPUT_B) >= Util::GameController::Pressed
-				|| gc->getKey(KEY_INPUT_F) >= Util::GameController::Pressed)
+			if (gc->getKey(KEY_INPUT_B) == Util::GameController::Pressed)
 			{
-				if (gc->getKey(KEY_INPUT_B) >= Util::GameController::Pressed)
-				{
-					walkSpeed_ = 2;
-				}
-				else
-				{
-					walkSpeed_ = 4;
-				}
+				walkSpeed_ = 2;
+			}
+			else if (gc->getKey(KEY_INPUT_F) == Util::GameController::Pressed)
+			{
+				walkSpeed_ = 4;
 			}
 			else
 			{
@@ -97,7 +92,7 @@ namespace Map
 				for (int i = 0; i < DirNum; i++)                // 向きの方向チェック
 				{
 					// 入力キーの判定
-					if (gc->getKey(InputKeyDirection[i]) >= Util::GameController::Pressed)
+					if (gc->getKey(InputKeyDirection[i]) == Util::GameController::Pressed)
 					{
 						dir_ = i;    // 入力されているキーの方向にdirをセットする
 						int cy = y_ / BlockLen;
