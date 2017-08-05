@@ -3,18 +3,17 @@
 
 namespace Map
 {
-const int    DefWalkSpeed    = 1;
-// 町の人間が歩き回る度合い -> 多いほどたまにしか動かない
-const int    WalkRand    = 100;
-// int型「dir」の値をがx,yそれぞれの方向の相対位置としてに分解したもの
-// x,yはそれぞれ、下、左、右、上
-const int    OffsetX[] = {  0, -1,  1,  0 };
-const int    OffsetY[] = {  1,  0,  0, -1 }; 
-const int DirNum = 4;
+	const int    DefWalkSpeed    = 1;
+	// 町の人間が歩き回る度合い -> 多いほどたまにしか動かない
+	const int    WalkRand    = 100;
+	// int型「dir」の値をがx,yそれぞれの方向の相対位置としてに分解したもの
+	// x,yはそれぞれ、下、左、右、上
+	const int    OffsetX[] = {  0, -1,  1,  0 };
+	const int    OffsetY[] = {  1,  0,  0, -1 }; 
+	const int DirNum = 4;
 
-// キャラクタの抽象クラス
-class AbstractMapCharacter
-{
+	class AbstractMapCharacter
+	{
 	public:
 		AbstractMapCharacter();
 		virtual ~AbstractMapCharacter(){};

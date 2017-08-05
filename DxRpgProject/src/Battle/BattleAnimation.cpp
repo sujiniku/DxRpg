@@ -12,7 +12,6 @@ namespace Battle
 		rl_ = Util:: ResourceLoader::getInstance();
 	}
 
-
 	BattleAnimation::~BattleAnimation()
 	{
 	}

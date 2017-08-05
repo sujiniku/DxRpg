@@ -4,9 +4,7 @@
 #include "Util/ResourceLoader.h"
 #include "Util/CsvMapReader.h"
 
-
 //#define FIXED_      // 主人公の座標が固定されないモード
-
 namespace Sequence
 {
 	namespace Game

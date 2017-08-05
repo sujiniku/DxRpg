@@ -28,7 +28,6 @@ namespace Battle
 		delete ba_;
 	}
 
-
 	void BattleProcess::initSakura()
 	{
 		int r;
@@ -371,7 +370,6 @@ namespace Battle
 		if (c->getScs()->hp_ > c->getScs()->hpMax_)
 		{
 			c->getScs()->hp_ = c->getScs()->hpMax_;
-			//c->setToHp(c->getScs()->hp_);
 		}
 		if (c->getTp() > 300)
 		{
@@ -869,7 +867,6 @@ namespace Battle
 		DxLib::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 	}
-
 
 	void  BattleProcess::graphBoard()
 	{

@@ -3,7 +3,8 @@
 #include "Sequence/Game/Child.h"
 #include "SharedCharacterStatus.h"  // 不完全クラス型へのポインターが参照できないそうなので
 
-namespace Util {
+namespace Util
+{
 	class GameController;
 	class ResourceLoader;
 }

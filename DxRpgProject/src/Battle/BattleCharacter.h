@@ -3,22 +3,21 @@
 
 namespace Battle
 {
-const int    BattleCharPosX1 = 500;
-const int    BattleCharPosY1 = 200;
-class BattleCharacter : public AbstractBattleCharacter
-{
-public:
-    BattleCharacter(SharedCharacterStatus *scs);
-    ~BattleCharacter();
+	const int    BattleCharPosX1 = 500;
+	const int    BattleCharPosY1 = 200;
+	class BattleCharacter : public AbstractBattleCharacter
+	{
+	public:
+		BattleCharacter(SharedCharacterStatus *scs);
+		~BattleCharacter();
 
-    void    pressedKeyUp();
-    void    pressedKeyDown();
-    void    pressedKeyX();
-    void    pressedKeyZ();
-    void    resetSelectState();
+		void    pressedKeyUp();
+		void    pressedKeyDown();
+		void    pressedKeyX();
+		void    pressedKeyZ();
+		void    resetSelectState();
 
-private:
-    void    initializeParameter() override;
-};
-
+	private:
+		void    initializeParameter() override;
+	};
 }
